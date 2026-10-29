@@ -1,3 +1,4 @@
+# T003 verifies logout from different pages and blocks account access afterward.
 import os
 from pathlib import Path
 
@@ -8,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 def test_T003_S1_logout_from_account():
+    # Sign in, then use the account menu to log out.
     driver = webdriver.Chrome()
     try:
         driver.get(
@@ -32,7 +34,7 @@ def test_T003_S1_logout_from_account():
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.LINK_TEXT, "Logout"))
         ).click()
-
+        # The logout page must confirm that the session ended.
         WebDriverWait(driver, 15).until(
             EC.url_contains("route=account/logout")
         )
@@ -46,6 +48,7 @@ def test_T003_S1_logout_from_account():
         driver.quit()
 
 def test_T003_S2_account_redirect_after_logout():
+    # A signed-out user should not reopen the account page directly.
     driver = webdriver.Chrome()
     try:
         driver.get(
@@ -73,7 +76,7 @@ def test_T003_S2_account_redirect_after_logout():
         WebDriverWait(driver, 15).until(
             EC.url_contains("route=account/logout")
         )
-
+        # Attempt to revisit the protected account URL after logout.
         driver.get(
             "https://opencart.abstracta.us/index.php?route=account/account"
         )
@@ -88,6 +91,7 @@ def test_T003_S2_account_redirect_after_logout():
         driver.quit()
 
 def test_T003_S3_logout_from_home():
+    # Check that the account menu can also log out from the home page.
     driver = webdriver.Chrome()
     try:
         driver.get(
@@ -125,6 +129,7 @@ def test_T003_S3_logout_from_home():
         WebDriverWait(driver, 15).until(
             EC.url_contains("route=account/logout")
         )
+        # Confirm the same logged-off message as the account-page route.
         page_text = driver.find_element(By.TAG_NAME, "body").text
         assert "You have been logged off your account." in page_text
 
