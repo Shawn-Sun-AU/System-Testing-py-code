@@ -1,3 +1,4 @@
+# T002 uses the registered test account supplied by TEST_EMAIL and TEST_PASSWORD.
 import os
 from uuid import uuid4
 from pathlib import Path
@@ -9,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 def test_T002_S1_valid_login():
+    # Correct credentials should open the customer's account page.
     driver = webdriver.Chrome()
     try:
         driver.get(
@@ -23,7 +25,7 @@ def test_T002_S1_valid_login():
         driver.find_element(
             By.CSS_SELECTOR, "input[value='Login']"
         ).click()
-
+        # Wait for the account page before checking its visible content.
         WebDriverWait(driver, 15).until(
             EC.url_contains("route=account/account")
         )
@@ -37,6 +39,7 @@ def test_T002_S1_valid_login():
         driver.quit()
 
 def test_T002_S2_wrong_password():
+    # Keep the email valid but alter the password to test rejection.
     driver = webdriver.Chrome()
     try:
         driver.get(
@@ -51,7 +54,7 @@ def test_T002_S2_wrong_password():
         driver.find_element(
             By.CSS_SELECTOR, "input[value='Login']"
         ).click()
-
+        # Verify the warning and confirm that login did not succeed.
         warning = "Warning: No match for E-Mail Address and/or Password."
         WebDriverWait(driver, 15).until(
             EC.text_to_be_present_in_element((By.TAG_NAME, "body"), warning)
@@ -64,6 +67,7 @@ def test_T002_S2_wrong_password():
         driver.quit()
 
 def test_T002_S3_unknown_email():
+    # A generated email is unlikely to belong to a registered customer.
     driver = webdriver.Chrome()
     try:
         driver.get(
@@ -77,7 +81,7 @@ def test_T002_S3_unknown_email():
         driver.find_element(
             By.CSS_SELECTOR, "input[value='Login']"
         ).click()
-
+        # The same generic warning should appear for an unknown email.
         warning = "Warning: No match for E-Mail Address and/or Password."
         WebDriverWait(driver, 15).until(
             EC.text_to_be_present_in_element((By.TAG_NAME, "body"), warning)
